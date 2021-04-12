@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{2BEC35D9-2519-4406-BE1E-7E1B320EF34B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0BBD24C7-9802-47D9-B84C-1203DEF1FE2C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgGrid.InfiniteRowModel.Sample", "sample\AgGrid.InfiniteRowModel.Sample\AgGrid.InfiniteRowModel.Sample.csproj", "{4A11AEB9-D343-4DD6-A64B-1E8379904D85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgGrid.InfiniteRowModel", "src\AgGrid.InfiniteRowModel\AgGrid.InfiniteRowModel.csproj", "{74AD98E5-8A82-4AC9-9531-B80915463B2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A11AEB9-D343-4DD6-A64B-1E8379904D85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A11AEB9-D343-4DD6-A64B-1E8379904D85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A11AEB9-D343-4DD6-A64B-1E8379904D85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A11AEB9-D343-4DD6-A64B-1E8379904D85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74AD98E5-8A82-4AC9-9531-B80915463B2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74AD98E5-8A82-4AC9-9531-B80915463B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74AD98E5-8A82-4AC9-9531-B80915463B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74AD98E5-8A82-4AC9-9531-B80915463B2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4A11AEB9-D343-4DD6-A64B-1E8379904D85} = {2BEC35D9-2519-4406-BE1E-7E1B320EF34B}
+		{74AD98E5-8A82-4AC9-9531-B80915463B2D} = {0BBD24C7-9802-47D9-B84C-1203DEF1FE2C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D4F544CC-1E0D-4E1D-AE74-4142B12074D0}
+	EndGlobalSection
+EndGlobal
