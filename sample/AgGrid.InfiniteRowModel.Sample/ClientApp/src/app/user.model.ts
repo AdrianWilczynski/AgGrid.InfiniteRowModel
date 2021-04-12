@@ -3,4 +3,5 @@ export interface User {
     fullName: string;
     registeredOn: string;
     age: number;
+    isVerified: boolean;
 }

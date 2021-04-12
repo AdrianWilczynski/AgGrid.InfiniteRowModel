@@ -8,5 +8,6 @@ namespace AgGrid.InfiniteRowModel.Sample.Entities
         public string FullName { get; set; }
         public DateTime RegisteredOn { get; set; }
         public int Age { get; set; }
+        public bool IsVerified { get; set; }
     }
 }

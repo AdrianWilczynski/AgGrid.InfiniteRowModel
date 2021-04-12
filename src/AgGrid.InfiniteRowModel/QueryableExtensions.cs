@@ -84,6 +84,8 @@ namespace AgGrid.InfiniteRowModel
                 { FilterType: FilterModelFilterType.Date, Type: FilterModelType.InRange } => new object[] { GetDate(filterModel.DateFrom), GetDate(filterModel.DateTo) },
                 { FilterType: FilterModelFilterType.Date } => new object[] { GetDate(filterModel.DateFrom) },
 
+                { FilterType: FilterModelFilterType.Boolean } => new object[] { GetBoolean(filterModel.Filter) },
+
                 _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}). Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
             };
         }
@@ -96,6 +98,9 @@ namespace AgGrid.InfiniteRowModel
 
         private static DateTime GetDate(string dateString)
             => DateTime.ParseExact(dateString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+        private static bool GetBoolean(object element)
+            => (element as JsonElement?)?.GetBoolean() ?? (bool)element;
 
         private static string GetPredicate(string colId, FilterModel filterModel, int index)
         {

@@ -43,6 +43,7 @@ namespace AgGrid.InfiniteRowModel
         public const string Text = "text";
         public const string Number = "number";
         public const string Date = "date";
+        public const string Boolean = "boolean";
     }
 
     public static class FilterModelType
