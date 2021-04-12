@@ -89,12 +89,12 @@ namespace AgGrid.InfiniteRowModel
                 _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}). Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
             };
         }
-
+        
         private static string GetString(object element)
             => (element as JsonElement?)?.GetString() ?? (string)element;
 
         private static double? GetNumber(object element)
-            => (element as JsonElement?)?.GetDouble() ?? (double?)element;
+            => (element as JsonElement?)?.GetDouble() ?? Convert.ToDouble(element);
 
         private static DateTime GetDate(string dateString)
             => DateTime.ParseExact(dateString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);

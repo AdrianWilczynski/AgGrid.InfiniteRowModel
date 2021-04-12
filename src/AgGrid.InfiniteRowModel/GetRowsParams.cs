@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AgGrid.InfiniteRowModel
 {
@@ -6,8 +7,8 @@ namespace AgGrid.InfiniteRowModel
     {
         public int StartRow { get; set; }
         public int EndRow { get; set; }
-        public IEnumerable<SortModel> SortModel { get; set; }
-        public IDictionary<string, FilterModel> FilterModel { get; set; }
+        public IEnumerable<SortModel> SortModel { get; set; } = Enumerable.Empty<SortModel>();
+        public IDictionary<string, FilterModel> FilterModel { get; set; } = new Dictionary<string, FilterModel>();
     }
 
     public class SortModel

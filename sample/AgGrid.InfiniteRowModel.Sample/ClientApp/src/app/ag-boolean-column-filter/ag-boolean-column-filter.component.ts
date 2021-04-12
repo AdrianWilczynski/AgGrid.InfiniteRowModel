@@ -37,7 +37,7 @@ export class AgBooleanColumnFilterComponent implements AgFilterComponent {
   }
 
   doesFilterPass(params: IDoesFilterPassParams): boolean {
-    throw new Error('Not implemented.');
+    throw new Error(`Not implemented. Seems to be unnecessary since we're doing all our filtering on the server side.`);
   }
 
   getModel(): AgBooleanColumnFilterModel {

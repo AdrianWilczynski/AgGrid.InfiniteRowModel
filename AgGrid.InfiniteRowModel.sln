@@ -9,7 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0BBD24C7-980
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgGrid.InfiniteRowModel.Sample", "sample\AgGrid.InfiniteRowModel.Sample\AgGrid.InfiniteRowModel.Sample.csproj", "{4A11AEB9-D343-4DD6-A64B-1E8379904D85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgGrid.InfiniteRowModel", "src\AgGrid.InfiniteRowModel\AgGrid.InfiniteRowModel.csproj", "{74AD98E5-8A82-4AC9-9531-B80915463B2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgGrid.InfiniteRowModel", "src\AgGrid.InfiniteRowModel\AgGrid.InfiniteRowModel.csproj", "{74AD98E5-8A82-4AC9-9531-B80915463B2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{62D44B2A-2545-402C-BF3F-479510BFD2F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgGrid.InfiniteRowModel.Tests", "tests\AgGrid.InfiniteRowModel.Tests\AgGrid.InfiniteRowModel.Tests.csproj", "{CDE5B4A7-075F-4041-8F46-780EC489C8F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +29,10 @@ Global
 		{74AD98E5-8A82-4AC9-9531-B80915463B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74AD98E5-8A82-4AC9-9531-B80915463B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74AD98E5-8A82-4AC9-9531-B80915463B2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE5B4A7-075F-4041-8F46-780EC489C8F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE5B4A7-075F-4041-8F46-780EC489C8F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE5B4A7-075F-4041-8F46-780EC489C8F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE5B4A7-075F-4041-8F46-780EC489C8F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4A11AEB9-D343-4DD6-A64B-1E8379904D85} = {2BEC35D9-2519-4406-BE1E-7E1B320EF34B}
 		{74AD98E5-8A82-4AC9-9531-B80915463B2D} = {0BBD24C7-9802-47D9-B84C-1203DEF1FE2C}
+		{CDE5B4A7-075F-4041-8F46-780EC489C8F9} = {62D44B2A-2545-402C-BF3F-479510BFD2F4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4F544CC-1E0D-4E1D-AE74-4142B12074D0}
