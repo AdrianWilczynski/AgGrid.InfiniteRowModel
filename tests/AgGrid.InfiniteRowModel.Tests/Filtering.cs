@@ -125,6 +125,8 @@ namespace AgGrid.InfiniteRowModel.Tests
         [Theory]
         [InlineData(true, FilterModelType.Equals, 1, 2)]
         [InlineData(false, FilterModelType.Equals, 3)]
+        [InlineData(true, FilterModelType.NotEqual, 3)]
+        [InlineData(false, FilterModelType.NotEqual, 1, 2)]
         public void FilterByBoolean(bool filter, string type, params int[] expectedIds)
         {
             var users = new[]

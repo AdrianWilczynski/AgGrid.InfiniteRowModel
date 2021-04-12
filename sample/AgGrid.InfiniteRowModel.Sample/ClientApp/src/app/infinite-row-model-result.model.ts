@@ -1,4 +1,4 @@
 export interface InfiniteRowModelResult<T> {
-    rowsThisBlock: T[];
-    lastRow?: number;
+  rowsThisBlock: T[];
+  lastRow?: number;
 }
