@@ -93,7 +93,7 @@ namespace AgGrid.InfiniteRowModel
         private static string GetString(object element)
             => (element as JsonElement?)?.GetString() ?? (string)element;
 
-        private static double? GetNumber(object element)
+        private static double GetNumber(object element)
             => (element as JsonElement?)?.GetDouble() ?? Convert.ToDouble(element);
 
         private static DateTime GetDate(string dateString)
