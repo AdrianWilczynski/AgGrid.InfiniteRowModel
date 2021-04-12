@@ -58,7 +58,7 @@ getUsers(query: string): Observable<InfiniteRowModelResult<User>> {
 
 ## Supported filters
 
-This package supports all three built-it simple filters:
+This package supports all three built-in simple filters:
 - Text Filter,
 - Number Filter,
 - Date Filter.
