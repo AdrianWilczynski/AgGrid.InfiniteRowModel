@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>9.0</LangVersion>
+    <Authors>Adrian Wilczyński</Authors>
+    <Description>AG Grid's Infinite Row Model (infinite scroll) for Entity Framework Core implemented with System.Linq.Dynamic.</Description>
+    <RepositoryUrl>https://github.com/AdrianWilczynski/AgGrid.InfiniteRowModel</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
