@@ -52,7 +52,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
 
-            Assert.NotEmpty(result.RowsThisBlock);
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
@@ -88,7 +88,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
 
-            Assert.NotEmpty(result.RowsThisBlock);
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
@@ -151,7 +151,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
 
-            Assert.NotEmpty(result.RowsThisBlock);
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
@@ -187,7 +187,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
 
-            Assert.NotEmpty(result.RowsThisBlock);
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
@@ -258,7 +258,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
 
-            Assert.NotEmpty(result.RowsThisBlock);
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
@@ -308,7 +308,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
 
-            Assert.NotEmpty(result.RowsThisBlock);
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
     }
