@@ -63,7 +63,7 @@ This package supports all three built-it simple filters:
 - Number Filter,
 - Date Filter.
 
-It also provides support for custom boolean filter implementation:
+It also provides support for custom boolean filter implementation. You don't have to use the same filter but your filter model has to match `AgBooleanColumnFilterModel` interface (below).
 
 ```ts
 @Component({
