@@ -38,7 +38,7 @@ namespace AgGrid.InfiniteRowModel
 
     public static class FilterModelFilterType
     {
-        public static IEnumerable<string> All => new[] { Text, Number, Date };
+        public static IEnumerable<string> All => new[] { Text, Number, Date, Boolean };
 
         public const string Text = "text";
         public const string Number = "number";
