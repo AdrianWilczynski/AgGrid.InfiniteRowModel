@@ -154,4 +154,4 @@ export interface AgBooleanColumnFilterModel {
 dotnet ef database update
 ```
 
-- Crated database will be seeded with sample date on app startup.
+- Crated database will be seeded with sample data on app startup.
