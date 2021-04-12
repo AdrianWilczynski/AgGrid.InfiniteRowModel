@@ -6,7 +6,7 @@ for Entity Framework Core implemented with `System.Linq.Dynamic`.
 ## How to use?
 
 - Add `AgGrid.InfiniteRowModel` package to your ASP.NET Core project.
-- Call `GetInfiniteRowModelBlock` extensions method on chosen `DbSet`/`IQueryable` and pass `IGetRowsParams` from AG Grid's `datasource`. You can pass deserialized object (of type `GetRowsParams`) or JSON string.
+- Call `GetInfiniteRowModelBlock` extension method on chosen `DbSet`/`IQueryable` and pass `IGetRowsParams` from AG Grid's `datasource`. You can pass deserialized object (of type `GetRowsParams`) or JSON string.
 - Pass the result (`rowsThisBlock` and `lastRow`) to `successCallback` of your `datasource` (see sample code below).
 
 *More in `sample/AgGrid.InfiniteRowModel.Sample`*
