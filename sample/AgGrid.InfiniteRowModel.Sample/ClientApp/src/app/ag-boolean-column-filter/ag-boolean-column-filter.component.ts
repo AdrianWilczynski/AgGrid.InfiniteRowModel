@@ -55,6 +55,7 @@ export class AgBooleanColumnFilterComponent implements AgFilterComponent {
   setModel(model: AgBooleanColumnFilterModel) {
     if (!model) {
       this.value = null;
+      return;
     }
 
     this.value = model.filter;
