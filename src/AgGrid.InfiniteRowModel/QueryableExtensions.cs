@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -20,6 +21,8 @@ namespace AgGrid.InfiniteRowModel
 
         public static InfiniteRowModelResult<T> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams)
         {
+            ValidateColIds<T>(getRowsParams);
+
             var takeCount = getRowsParams.EndRow - getRowsParams.StartRow;
 
             var rows = queryable
@@ -38,6 +41,23 @@ namespace AgGrid.InfiniteRowModel
             };
         }
 
+        private static void ValidateColIds<T>(GetRowsParams getRowsParams)
+        {
+            var propertyNames = GetPropertyNames<T>();
+            var invalidColIds = GetColIds(getRowsParams).Where(c => !propertyNames.Contains(c.ToPascalCase()));
+
+            if (invalidColIds.Any())
+            {
+                throw new ArgumentException($"Invalid colIds: {string.Join(", ", invalidColIds)}.");
+            }
+        }
+
+        private static HashSet<string> GetPropertyNames<T>()
+            => typeof(T).GetProperties().Select(p => p.Name).ToHashSet();
+
+        private static IEnumerable<string> GetColIds(GetRowsParams getRowsParams)
+            => getRowsParams.FilterModel.Select(f => f.Key);
+
         private static IQueryable<T> Filter<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams)
         {
             foreach (var kvp in getRowsParams.FilterModel)
@@ -54,6 +74,11 @@ namespace AgGrid.InfiniteRowModel
                 }
                 else
                 {
+                    if (!FilterModelOperator.All.Contains(filterModel.Operator))
+                    {
+                        throw new ArgumentException($"Unsupported {nameof(FilterModel.Operator)} value ({filterModel.Operator}). Supported values: {string.Join(", ", FilterModelOperator.All)}.");
+                    }
+
                     var predicateLeftSide = GetPredicate(colId, filterModel.Condition1, 0);
                     var argsLeftSide = GetWhereArgs(filterModel.Condition1);
 
@@ -131,7 +156,16 @@ namespace AgGrid.InfiniteRowModel
 
         private static IQueryable<T> Sort<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams)
         {
-            var orderingParts = getRowsParams.SortModel.Select(s => $"{s.ColId.ToPascalCase()} {s.Sort}");
+            var orderingParts = getRowsParams.SortModel.Select(s =>
+            {
+                if (!SortModelSortDirection.All.Contains(s.Sort))
+                {
+                    throw new ArgumentException($"Unsupported {nameof(SortModel.Sort)} value ({s.Sort}). Supported values: {string.Join(", ", SortModelSortDirection.All)}.");
+                }
+
+                return $"{s.ColId.ToPascalCase()} {s.Sort}";
+            });
+
             var ordering = string.Join(", ", orderingParts);
 
             if (ordering.Length == 0)
