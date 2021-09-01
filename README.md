@@ -42,7 +42,7 @@ gridOptions: GridOptions = {
       filter: 'agTextColumnFilter',
       filterParams: {
         filterOptions: ['equals', 'notEqual', 'contains', 'notContains', 'startsWith', 'endsWith', this.nullFilterOption ]
-        }
+      }
     },
     { headerName: 'Registered on', field: 'registeredOn', filter: 'agDateColumnFilter' },
     { headerName: 'Age', field: 'age', filter: 'agNumberColumnFilter' },
