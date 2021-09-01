@@ -70,7 +70,7 @@ namespace AgGrid.InfiniteRowModel
                     var predicate = GetPredicate(colId, filterModel, 0);
                     var args = GetWhereArgs(filterModel);
 
-                    queryable = queryable.Where(predicate, args: args);
+                    queryable = queryable.Where(predicate, args);
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace AgGrid.InfiniteRowModel
                     var predicateLeftSide = GetPredicate(colId, filterModel.Condition1, 0);
                     var argsLeftSide = GetWhereArgs(filterModel.Condition1);
 
-                    var rightSideArgsIndex = filterModel.Condition1.Type == FilterModelType.InRange ? 2 : 1;
+                    var rightSideArgsIndex = argsLeftSide.Length;
 
                     var predicateRightSide = GetPredicate(colId, filterModel.Condition2, rightSideArgsIndex);
                     var argsRightSide = GetWhereArgs(filterModel.Condition2);
@@ -90,7 +90,7 @@ namespace AgGrid.InfiniteRowModel
                     var predicate = $"{predicateLeftSide} {filterModel.Operator} {predicateRightSide}";
                     var args = argsLeftSide.Concat(argsRightSide).ToArray();
 
-                    queryable = queryable.Where(predicate, args: args);
+                    queryable = queryable.Where(predicate, args);
                 }
             }
 
@@ -101,6 +101,8 @@ namespace AgGrid.InfiniteRowModel
         {
             return filterModel switch
             {
+                { Type: FilterModelType.Null } => new object[0],
+
                 { FilterType: FilterModelFilterType.Text } => new object[] { GetString(filterModel.Filter) },
 
                 { FilterType: FilterModelFilterType.Number, Type: FilterModelType.InRange } => new object[] { GetNumber(filterModel.Filter), filterModel.FilterTo },
@@ -114,7 +116,7 @@ namespace AgGrid.InfiniteRowModel
                 _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}). Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
             };
         }
-        
+
         private static string GetString(object element)
             => (element as JsonElement?)?.GetString() ?? (string)element;
 
@@ -149,6 +151,8 @@ namespace AgGrid.InfiniteRowModel
                 FilterModelType.GreaterThanOrEqual => $"{propertyName} >= @{index}",
 
                 FilterModelType.InRange => $"{propertyName} >= @{index} AND {propertyName} <= @{index + 1}",
+
+                FilterModelType.Null => $"{propertyName} == null",
 
                 _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.Type)} value ({filterModel.Type}). Supported values: {string.Join(", ", FilterModelType.All)}.")
             };

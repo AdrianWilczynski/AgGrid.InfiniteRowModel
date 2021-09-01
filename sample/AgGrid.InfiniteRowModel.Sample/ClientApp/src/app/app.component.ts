@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GridOptions, IGetRowsParams } from 'ag-grid-community';
+import { GridOptions, IFilterOptionDef, IGetRowsParams } from 'ag-grid-community';
 import { AgBooleanColumnFilterComponent } from './ag-boolean-column-filter/ag-boolean-column-filter.component';
 import { UserService } from './user.service';
 
@@ -10,6 +10,13 @@ import { UserService } from './user.service';
 export class AppComponent {
   constructor(private userService: UserService) { }
 
+  nullFilterOption: IFilterOptionDef = {
+    displayKey: 'null',
+    displayName: 'Null',
+    test: (filterValue, cellValue) => cellValue === null,
+    hideFilterInput: true
+  };
+
   gridOptions: GridOptions = {
     defaultColDef: {
       sortable: true,
@@ -19,7 +26,14 @@ export class AppComponent {
       'agBooleanColumnFilter': AgBooleanColumnFilterComponent
     },
     columnDefs: [
-      { headerName: 'Full name', field: 'fullName', filter: 'agTextColumnFilter' },
+      {
+        headerName: 'Full name',
+        field: 'fullName',
+        filter: 'agTextColumnFilter',
+        filterParams: {
+          filterOptions: ['equals', 'notEqual', 'contains', 'notContains', 'startsWith', 'endsWith', this.nullFilterOption ]
+        }
+      },
       { headerName: 'Registered on', field: 'registeredOn', filter: 'agDateColumnFilter' },
       { headerName: 'Age', field: 'age', filter: 'agNumberColumnFilter' },
       { headerName: 'Is verified', field: 'isVerified', filter: 'agBooleanColumnFilter' }

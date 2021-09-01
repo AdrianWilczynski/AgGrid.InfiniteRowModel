@@ -1,5 +1,6 @@
 ﻿using AgGrid.InfiniteRowModel.Sample.Entities;
 using Bogus;
+using Bogus.Extensions;
 using System.Linq;
 
 namespace AgGrid.InfiniteRowModel.Sample.Database
@@ -21,7 +22,7 @@ namespace AgGrid.InfiniteRowModel.Sample.Database
             }
 
             var faker = new Faker<User>()
-                .RuleFor(u => u.FullName, f => f.Name.FullName())
+                .RuleFor(u => u.FullName, f => f.Name.FullName().OrNull(f, 0.2f))
                 .RuleFor(u => u.RegisteredOn, f => f.Date.Past(10))
                 .RuleFor(u => u.Age, f => f.Random.Number(10, 90))
                 .RuleFor(u => u.IsVerified, f => f.Random.Bool());

@@ -74,6 +74,8 @@ namespace AgGrid.InfiniteRowModel
         public const string GreaterThanOrEqual = "greaterThanOrEqual";
 
         public const string InRange = "inRange";
+
+        public const string Null = "null";
     }
 
     public static class FilterModelOperator

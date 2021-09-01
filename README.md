@@ -20,6 +20,13 @@ public InfiniteRowModelResult<User> Get(string query)
 ```
 
 ```ts
+nullFilterOption: IFilterOptionDef = {
+  displayKey: 'null',
+  displayName: 'Null',
+  test: (filterValue, cellValue) => cellValue === null,
+  hideFilterInput: true
+};
+
 gridOptions: GridOptions = {
   defaultColDef: {
     sortable: true,
@@ -29,7 +36,14 @@ gridOptions: GridOptions = {
     'agBooleanColumnFilter': AgBooleanColumnFilterComponent
   },
   columnDefs: [
-    { headerName: 'Full name', field: 'fullName', filter: 'agTextColumnFilter' },
+    {
+      headerName: 'Full name',
+      field: 'fullName',
+      filter: 'agTextColumnFilter',
+      filterParams: {
+        filterOptions: ['equals', 'notEqual', 'contains', 'notContains', 'startsWith', 'endsWith', this.nullFilterOption ]
+        }
+    },
     { headerName: 'Registered on', field: 'registeredOn', filter: 'agDateColumnFilter' },
     { headerName: 'Age', field: 'age', filter: 'agNumberColumnFilter' },
     { headerName: 'Is verified', field: 'isVerified', filter: 'agBooleanColumnFilter' }
@@ -58,12 +72,14 @@ getUsers(query: string): Observable<InfiniteRowModelResult<User>> {
 
 ## Supported filters
 
-This package supports all three built-in simple filters:
+This package supports all three [built-in simple filters](https://www.ag-grid.com/angular-data-grid/filter-provided-simple/):
 - Text Filter,
 - Number Filter,
 - Date Filter.
 
-It also provides support for custom boolean filter implementation. You don't have to use the same filter but your filter model has to match `AgBooleanColumnFilterModel` interface (below).
+You can use [custom filter option](https://www.ag-grid.com/angular-data-grid/filter-provided-simple/#custom-filter-options) option with simple filters to allow filtering by null.
+
+It also provides support for [custom boolean filter](https://www.ag-grid.com/angular-data-grid/component-filter/) implementation. You don't have to use the same filter but your filter model has to match `AgBooleanColumnFilterModel` interface (below).
 
 ```ts
 @Component({

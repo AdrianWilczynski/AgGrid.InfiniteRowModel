@@ -311,5 +311,138 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
+
+        [Fact]
+        public void FilterByNull()
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ala Kowalska" },
+                new User { Id = 2, FullName = null },
+                new User { Id = 3, FullName = null },
+                new User { Id = 4, FullName = "Jan Kowalski" },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "fullName", new FilterModel { Type = FilterModelType.Null, FilterType = FilterModelFilterType.Text } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
+
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 2);
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 3);
+            Assert.DoesNotContain(result.RowsThisBlock, r => r.Id == 4 || r.Id == 1);
+        }
+
+        [Theory]
+        [InlineData(FilterModelOperator.And)]
+        [InlineData(FilterModelOperator.Or, 1, 2, 3)]
+        public void CombineFilteringByNull(string filterOperator, params int[] expectedIds)
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ada Kowalska" },
+                new User { Id = 2, FullName = null },
+                new User { Id = 3, FullName = "Ada Kowalczyk" },
+                new User { Id = 4, FullName = "Jan Kowalski" }
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    {
+                        "fullName",
+                        new FilterModel
+                        {
+                            FilterType = FilterModelFilterType.Text,
+                            Operator = filterOperator,
+                            Condition1 = new FilterModel
+                            {
+                                FilterType = FilterModelFilterType.Text,
+                                Type = FilterModelType.Null
+                            },
+                            Condition2 = new FilterModel
+                            {
+                                FilterType = FilterModelFilterType.Text,
+                                Type = FilterModelType.StartsWith,
+                                Filter = "A"
+                            }
+                        }
+                    },
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
+
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
+            Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
+        }
+
+        [Theory]
+        [InlineData(FilterModelOperator.And, 2)]
+        [InlineData(FilterModelOperator.Or, 1, 2, 3)]
+        public void CombineFilteringByRange(string filterOperator, params int[] expectedIds)
+        {
+            var users = new[]
+            {
+                new User { Id = 1, Age = 32 },
+                new User { Id = 2, Age = 55 },
+                new User { Id = 3, Age = 66 },
+                new User { Id = 4, Age = 77 }
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    {
+                        "age",
+                        new FilterModel
+                        {
+                            FilterType = FilterModelFilterType.Number,
+                            Operator = filterOperator,
+                            Condition1 = new FilterModel
+                            {
+                                FilterType = FilterModelFilterType.Number,
+                                Type = FilterModelType.InRange,
+                                Filter = 50,
+                                FilterTo = 70
+                            },
+                            Condition2 = new FilterModel
+                            {
+                                FilterType = FilterModelFilterType.Number,
+                                Type = FilterModelType.LessThan,
+                                Filter = 60
+                            }
+                        }
+                    },
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
+
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
+            Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
+        }
     }
 }
