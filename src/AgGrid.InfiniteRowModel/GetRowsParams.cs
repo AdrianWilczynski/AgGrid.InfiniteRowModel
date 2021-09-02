@@ -55,7 +55,8 @@ namespace AgGrid.InfiniteRowModel
         {
             Equals, NotEqual, Contains, NotContains,
             StartsWith, EndsWith, LessThan, LessThanOrEqual,
-            GreaterThan, GreaterThanOrEqual, InRange
+            GreaterThan, GreaterThanOrEqual, InRange,
+            Null, NotNull
         };
 
         new public const string Equals = "equals";
