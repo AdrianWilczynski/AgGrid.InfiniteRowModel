@@ -19,7 +19,7 @@ export class AppComponent {
 
   notNullFilterOption: IFilterOptionDef = {
     displayKey: 'notNull',
-    displayName: 'Not Null',
+    displayName: 'Not null',
     test: (filterValue, cellValue) => cellValue !== null,
     hideFilterInput: true
   };
