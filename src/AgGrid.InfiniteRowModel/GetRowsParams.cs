@@ -76,6 +76,7 @@ namespace AgGrid.InfiniteRowModel
         public const string InRange = "inRange";
 
         public const string Null = "null";
+        public const string NotNull = "notNull";
     }
 
     public static class FilterModelOperator

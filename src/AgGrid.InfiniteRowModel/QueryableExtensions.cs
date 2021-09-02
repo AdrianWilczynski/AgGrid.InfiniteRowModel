@@ -101,7 +101,7 @@ namespace AgGrid.InfiniteRowModel
         {
             return filterModel switch
             {
-                { Type: FilterModelType.Null } => new object[0],
+                { Type: FilterModelType.Null or FilterModelType.NotNull } => new object[0],
 
                 { FilterType: FilterModelFilterType.Text } => new object[] { GetString(filterModel.Filter) },
 
@@ -153,6 +153,7 @@ namespace AgGrid.InfiniteRowModel
                 FilterModelType.InRange => $"{propertyName} >= @{index} AND {propertyName} <= @{index + 1}",
 
                 FilterModelType.Null => $"{propertyName} == null",
+                FilterModelType.NotNull => $"{propertyName} != null",
 
                 _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.Type)} value ({filterModel.Type}). Supported values: {string.Join(", ", FilterModelType.All)}.")
             };

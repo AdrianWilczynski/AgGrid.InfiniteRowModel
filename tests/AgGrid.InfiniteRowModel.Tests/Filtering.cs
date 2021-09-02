@@ -444,5 +444,36 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
+
+        [Fact]
+        public void FilterByNotNull()
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ala Kowalska" },
+                new User { Id = 2, FullName = null },
+                new User { Id = 3, FullName = null },
+                new User { Id = 4, FullName = "Jan Kowalski" },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "fullName", new FilterModel { Type = FilterModelType.NotNull, FilterType = FilterModelFilterType.Text } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
+
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 1);
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 4);
+            Assert.DoesNotContain(result.RowsThisBlock, r => r.Id == 2 || r.Id == 3);
+        }
     }
 }

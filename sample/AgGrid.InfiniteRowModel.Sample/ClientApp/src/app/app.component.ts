@@ -17,6 +17,13 @@ export class AppComponent {
     hideFilterInput: true
   };
 
+  notNullFilterOption: IFilterOptionDef = {
+    displayKey: 'notNull',
+    displayName: 'Not Null',
+    test: (filterValue, cellValue) => cellValue !== null,
+    hideFilterInput: true
+  };
+
   gridOptions: GridOptions = {
     defaultColDef: {
       sortable: true,
@@ -31,7 +38,10 @@ export class AppComponent {
         field: 'fullName',
         filter: 'agTextColumnFilter',
         filterParams: {
-          filterOptions: ['equals', 'notEqual', 'contains', 'notContains', 'startsWith', 'endsWith', this.nullFilterOption ]
+          filterOptions: [
+            'equals', 'notEqual', 'contains', 'notContains', 'startsWith', 'endsWith',
+            this.nullFilterOption, this.notNullFilterOption
+          ]
         }
       },
       { headerName: 'Registered on', field: 'registeredOn', filter: 'agDateColumnFilter' },
