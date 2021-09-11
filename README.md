@@ -77,7 +77,7 @@ This package supports all three [built-in simple filters](https://www.ag-grid.co
 - Number Filter,
 - Date Filter.
 
-You can use [custom filter option](https://www.ag-grid.com/angular-data-grid/filter-provided-simple/#custom-filter-options) option with simple filters to allow filtering by null.
+You can use [custom filter option](https://www.ag-grid.com/angular-data-grid/filter-provided-simple/#custom-filter-options) with simple filters to allow filtering by null.
 
 It also provides support for [custom boolean filter](https://www.ag-grid.com/angular-data-grid/component-filter/) implementation. You don't have to use the same filter but your filter model has to match `AgBooleanColumnFilterModel` interface (below).
 
