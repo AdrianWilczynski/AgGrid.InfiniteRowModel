@@ -76,10 +76,7 @@ namespace AgGrid.InfiniteRowModel
                 }
                 else
                 {
-                    if (!FilterModelOperator.All.Contains(filterModel.Operator))
-                    {
-                        throw new ArgumentException($"Unsupported {nameof(FilterModel.Operator)} value ({filterModel.Operator}). Supported values: {string.Join(", ", FilterModelOperator.All)}.");
-                    }
+                    ValidateOperator(filterModel);
 
                     var predicateLeftSide = GetPredicate(colId, filterModel.Condition1, 0, options);
                     var argsLeftSide = GetWhereArgs(filterModel.Condition1);
@@ -97,6 +94,14 @@ namespace AgGrid.InfiniteRowModel
             }
 
             return queryable;
+        }
+
+        private static void ValidateOperator(FilterModel filterModel)
+        {
+            if (!FilterModelOperator.All.Contains(filterModel.Operator))
+            {
+                throw new ArgumentException($"Unsupported {nameof(FilterModel.Operator)} value ({filterModel.Operator}). Supported values: {string.Join(", ", FilterModelOperator.All)}.");
+            }
         }
 
         private static object[] GetWhereArgs(FilterModel filterModel)
@@ -172,15 +177,9 @@ namespace AgGrid.InfiniteRowModel
 
         private static IQueryable<T> Sort<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams)
         {
-            var orderingParts = getRowsParams.SortModel.Select(s =>
-            {
-                if (!SortModelSortDirection.All.Contains(s.Sort))
-                {
-                    throw new ArgumentException($"Unsupported {nameof(SortModel.Sort)} value ({s.Sort}). Supported values: {string.Join(", ", SortModelSortDirection.All)}.");
-                }
+            ValidateSortDirections(getRowsParams);
 
-                return $"{s.ColId.ToPascalCase()} {s.Sort}";
-            });
+            var orderingParts = getRowsParams.SortModel.Select(s => $"{s.ColId.ToPascalCase()} {s.Sort}");
 
             var ordering = string.Join(", ", orderingParts);
 
@@ -190,6 +189,17 @@ namespace AgGrid.InfiniteRowModel
             }
 
             return queryable.OrderBy(ordering);
+        }
+
+        private static void ValidateSortDirections(GetRowsParams getRowsParams)
+        {
+            foreach (var sort in getRowsParams.SortModel)
+            {
+                if (!SortModelSortDirection.All.Contains(sort.Sort))
+                {
+                    throw new ArgumentException($"Unsupported {nameof(SortModel.Sort)} value ({sort.Sort}). Supported values: {string.Join(", ", SortModelSortDirection.All)}.");
+                }
+            }
         }
     }
 }
