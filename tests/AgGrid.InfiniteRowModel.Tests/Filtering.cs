@@ -475,5 +475,74 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.Contains(result.RowsThisBlock, r => r.Id == 4);
             Assert.DoesNotContain(result.RowsThisBlock, r => r.Id == 2 || r.Id == 3);
         }
+
+        [Theory]
+        [InlineData("kOwAl", FilterModelType.Contains, 1, 2)]
+        [InlineData("kOwAl", FilterModelType.NotContains, 3)]
+        [InlineData("aLa", FilterModelType.StartsWith, 1, 3)]
+        [InlineData("owaLSKA", FilterModelType.EndsWith, 1)]
+        [InlineData("ala KOWALSKA", FilterModelType.Equals, 1)]
+        [InlineData("ala KOWALSKA", FilterModelType.NotEqual, 2, 3)]
+        public void BeCaseInsensitiveIfConfiguredToBe(string filter, string type, params int[] expectedIds)
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ala Kowalska" },
+                new User { Id = 2, FullName = "Jan Kowalski" },
+                new User { Id = 3, FullName = "Ala Nowak" }
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "fullName", new FilterModel { Filter = filter, Type = type, FilterType = FilterModelFilterType.Text } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query, new() { CaseInsensitive = true });
+
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
+            Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
+        }
+
+        [Theory]
+        [InlineData("Kowalska", FilterModelType.Contains, 1)]
+        [InlineData("Kowalska", FilterModelType.NotContains, 2)]
+        [InlineData("Ala", FilterModelType.StartsWith, 1)]
+        [InlineData("Kowalska", FilterModelType.EndsWith, 1)]
+        [InlineData("Ala Kowalska", FilterModelType.Equals, 1)]
+        [InlineData("Ala Kowalska", FilterModelType.NotEqual, 2)]
+        public void BeCaseSensitiveByDefault(string filter, string type, params int[] expectedIds)
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ala Kowalska" },
+                new User { Id = 2, FullName = "ala kowalska" },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "fullName", new FilterModel { Filter = filter, Type = type, FilterType = FilterModelFilterType.Text } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
+
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
+            Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
+        }
     }
 }

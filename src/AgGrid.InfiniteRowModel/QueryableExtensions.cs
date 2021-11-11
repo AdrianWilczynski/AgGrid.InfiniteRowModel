@@ -9,24 +9,26 @@ namespace AgGrid.InfiniteRowModel
 {
     public static class QueryableExtensions
     {
-        public static InfiniteRowModelResult<T> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, string getRowsParamsJson)
+        public static InfiniteRowModelResult<T> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, string getRowsParamsJson, InfiniteRowModelOptions options = null)
         {
             var getRowsParams = JsonSerializer.Deserialize<GetRowsParams>(getRowsParamsJson, new()
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            return queryable.GetInfiniteRowModelBlock(getRowsParams);
+            return queryable.GetInfiniteRowModelBlock(getRowsParams, options);
         }
 
-        public static InfiniteRowModelResult<T> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams)
+        public static InfiniteRowModelResult<T> GetInfiniteRowModelBlock<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams, InfiniteRowModelOptions options = null)
         {
+            options ??= new InfiniteRowModelOptions();
+
             ValidateColIds<T>(getRowsParams);
 
             var takeCount = getRowsParams.EndRow - getRowsParams.StartRow;
 
             var rows = queryable
-                .Filter(getRowsParams)
+                .Filter(getRowsParams, options)
                 .Sort(getRowsParams)
                 .Skip(getRowsParams.StartRow)
                 .Take(takeCount + 1)
@@ -58,7 +60,7 @@ namespace AgGrid.InfiniteRowModel
         private static IEnumerable<string> GetColIds(GetRowsParams getRowsParams)
             => getRowsParams.FilterModel.Select(f => f.Key);
 
-        private static IQueryable<T> Filter<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams)
+        private static IQueryable<T> Filter<T>(this IQueryable<T> queryable, GetRowsParams getRowsParams, InfiniteRowModelOptions options)
         {
             foreach (var kvp in getRowsParams.FilterModel)
             {
@@ -67,7 +69,7 @@ namespace AgGrid.InfiniteRowModel
 
                 if (string.IsNullOrEmpty(filterModel.Operator))
                 {
-                    var predicate = GetPredicate(colId, filterModel, 0);
+                    var predicate = GetPredicate(colId, filterModel, 0, options);
                     var args = GetWhereArgs(filterModel);
 
                     queryable = queryable.Where(predicate, args);
@@ -79,12 +81,12 @@ namespace AgGrid.InfiniteRowModel
                         throw new ArgumentException($"Unsupported {nameof(FilterModel.Operator)} value ({filterModel.Operator}). Supported values: {string.Join(", ", FilterModelOperator.All)}.");
                     }
 
-                    var predicateLeftSide = GetPredicate(colId, filterModel.Condition1, 0);
+                    var predicateLeftSide = GetPredicate(colId, filterModel.Condition1, 0, options);
                     var argsLeftSide = GetWhereArgs(filterModel.Condition1);
 
                     var rightSideArgsIndex = argsLeftSide.Length;
 
-                    var predicateRightSide = GetPredicate(colId, filterModel.Condition2, rightSideArgsIndex);
+                    var predicateRightSide = GetPredicate(colId, filterModel.Condition2, rightSideArgsIndex, options);
                     var argsRightSide = GetWhereArgs(filterModel.Condition2);
 
                     var predicate = $"{predicateLeftSide} {filterModel.Operator} {predicateRightSide}";
@@ -129,31 +131,40 @@ namespace AgGrid.InfiniteRowModel
         private static bool GetBoolean(object element)
             => (element as JsonElement?)?.GetBoolean() ?? (bool)element;
 
-        private static string GetPredicate(string colId, FilterModel filterModel, int index)
+        private static string GetPredicate(string colId, FilterModel filterModel, int index, InfiniteRowModelOptions options)
         {
             var propertyName = colId.ToPascalCase();
 
-            return filterModel.Type switch
+            return filterModel switch
             {
-                FilterModelType.Equals => $"{propertyName} == @{index}",
-                FilterModelType.NotEqual => $"{propertyName} != @{index}",
+                { Type: FilterModelType.Equals, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower().Equals(@{index}.ToLower())",
+                { Type: FilterModelType.NotEqual, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"!{propertyName}.ToLower().Equals(@{index}.ToLower())",
 
-                FilterModelType.Contains => $"{propertyName}.Contains(@{index})",
-                FilterModelType.NotContains => $"!{propertyName}.Contains(@{index})",
+                { Type: FilterModelType.Equals } => $"{propertyName} == @{index}",
+                { Type: FilterModelType.NotEqual } => $"{propertyName} != @{index}",
 
-                FilterModelType.StartsWith => $"{propertyName}.StartsWith(@{index})",
-                FilterModelType.EndsWith => $"{propertyName}.EndsWith(@{index})",
+                { Type: FilterModelType.Contains } when options.CaseInsensitive => $"{propertyName}.ToLower().Contains(@{index}.ToLower())",
+                { Type: FilterModelType.NotContains } when options.CaseInsensitive => $"!{propertyName}.ToLower().Contains(@{index}.ToLower())",
 
-                FilterModelType.LessThan => $"{propertyName} < @{index}",
-                FilterModelType.LessThanOrEqual => $"{propertyName} <= @{index}",
+                { Type: FilterModelType.Contains } => $"{propertyName}.Contains(@{index})",
+                { Type: FilterModelType.NotContains } => $"!{propertyName}.Contains(@{index})",
 
-                FilterModelType.GreaterThan => $"{propertyName} > @{index}",
-                FilterModelType.GreaterThanOrEqual => $"{propertyName} >= @{index}",
+                { Type: FilterModelType.StartsWith } when options.CaseInsensitive => $"{propertyName}.ToLower().StartsWith(@{index}.ToLower())",
+                { Type: FilterModelType.EndsWith } when options.CaseInsensitive  => $"{propertyName}.ToLower().EndsWith(@{index}.ToLower())",
 
-                FilterModelType.InRange => $"{propertyName} >= @{index} AND {propertyName} <= @{index + 1}",
+                { Type: FilterModelType.StartsWith } => $"{propertyName}.StartsWith(@{index})",
+                { Type: FilterModelType.EndsWith } => $"{propertyName}.EndsWith(@{index})",
 
-                FilterModelType.Null => $"{propertyName} == null",
-                FilterModelType.NotNull => $"{propertyName} != null",
+                { Type: FilterModelType.LessThan } => $"{propertyName} < @{index}",
+                { Type: FilterModelType.LessThanOrEqual } => $"{propertyName} <= @{index}",
+
+                { Type: FilterModelType.GreaterThan } => $"{propertyName} > @{index}",
+                { Type: FilterModelType.GreaterThanOrEqual } => $"{propertyName} >= @{index}",
+
+                { Type: FilterModelType.InRange } => $"{propertyName} >= @{index} AND {propertyName} <= @{index + 1}",
+
+                { Type: FilterModelType.Null } => $"{propertyName} == null",
+                { Type: FilterModelType.NotNull } => $"{propertyName} != null",
 
                 _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.Type)} value ({filterModel.Type}). Supported values: {string.Join(", ", FilterModelType.All)}.")
             };
