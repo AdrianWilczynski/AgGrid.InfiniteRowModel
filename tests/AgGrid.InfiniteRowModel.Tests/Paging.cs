@@ -1,23 +1,18 @@
 using AgGrid.InfiniteRowModel.Sample.Database;
 using AgGrid.InfiniteRowModel.Sample.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Xunit;
 
 namespace AgGrid.InfiniteRowModel.Tests
 {
-    public class Paging
+    public abstract class Paging : IDisposable
     {
-        private readonly AppDbContext _dbContext;
+        protected readonly AppDbContext _dbContext;
 
-        public Paging()
+        protected Paging(AppDbContext dbContext)
         {
-            var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _dbContext = new AppDbContext(dbContextOptions);
+            _dbContext = dbContext;
         }
 
         [Fact]
@@ -25,11 +20,11 @@ namespace AgGrid.InfiniteRowModel.Tests
         {
             var users = new[]
             {
-                new User { FullName = "1" },
-                new User { FullName = "2" },
-                new User { FullName = "3" },
-                new User { FullName = "4" },
-                new User { FullName = "5" }
+                new User { Id = 1, FullName = "1" },
+                new User { Id = 2, FullName = "2" },
+                new User { Id = 3, FullName = "3" },
+                new User { Id = 4, FullName = "4" },
+                new User { Id = 5, FullName = "5" }
             };
 
             _dbContext.Users.AddRange(users);
@@ -60,5 +55,7 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.Contains(page2.RowsThisBlock, u => u.FullName == "4");
             Assert.Contains(page2.RowsThisBlock, u => u.FullName == "5");
         }
+
+        public virtual void Dispose() => _dbContext.Dispose();
     }
 }

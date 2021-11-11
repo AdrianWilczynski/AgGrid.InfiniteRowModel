@@ -1,23 +1,18 @@
 using AgGrid.InfiniteRowModel.Sample.Database;
 using AgGrid.InfiniteRowModel.Sample.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Xunit;
 
 namespace AgGrid.InfiniteRowModel.Tests
 {
-    public class Ordering
+    public abstract class Ordering : IDisposable
     {
-        private readonly AppDbContext _dbContext;
+        protected readonly AppDbContext _dbContext;
 
-        public Ordering()
+        protected Ordering(AppDbContext dbContext)
         {
-            var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _dbContext = new AppDbContext(dbContextOptions);
+            _dbContext = dbContext;
         }
 
         [Fact]
@@ -25,9 +20,9 @@ namespace AgGrid.InfiniteRowModel.Tests
         {
             var users = new[]
             {
-                new User { FullName = "Ala Kowalska" },
-                new User { FullName = "Jan Kowalski" },
-                new User { FullName = "Ala Nowak" }
+                new User { Id = 1, FullName = "Ala Kowalska" },
+                new User { Id = 2, FullName = "Jan Kowalski" },
+                new User { Id = 3, FullName = "Ala Nowak" }
             };
 
             _dbContext.Users.AddRange(users);
@@ -59,9 +54,9 @@ namespace AgGrid.InfiniteRowModel.Tests
         {
             var users = new[]
             {
-                new User { FullName = "Ala Nowak" },
-                new User { FullName = "Ala Kowalska" },
-                new User { FullName = "Jan Kowalski" }
+                new User { Id = 1, FullName = "Ala Nowak" },
+                new User { Id = 2, FullName = "Ala Kowalska" },
+                new User { Id = 3, FullName = "Jan Kowalski" }
             };
 
             _dbContext.Users.AddRange(users);
@@ -93,9 +88,9 @@ namespace AgGrid.InfiniteRowModel.Tests
         {
             var users = new[]
             {
-                new User { FullName = "Jan Kowalski", Age = 18 },
-                new User { FullName = "Ala Nowak", Age = 21 },
-                new User { FullName = "Ala Nowak", Age = 22 }
+                new User { Id = 1, FullName = "Jan Kowalski", Age = 18 },
+                new User { Id = 2, FullName = "Ala Nowak", Age = 21 },
+                new User { Id = 3, FullName = "Ala Nowak", Age = 22 }
             };
 
             _dbContext.Users.AddRange(users);
@@ -126,5 +121,7 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.Equal(22, result.RowsThisBlock.ElementAt(1).Age);
             Assert.Equal(18, result.RowsThisBlock.ElementAt(2).Age);
         }
+
+        public virtual void Dispose() => _dbContext.Dispose();
     }
 }

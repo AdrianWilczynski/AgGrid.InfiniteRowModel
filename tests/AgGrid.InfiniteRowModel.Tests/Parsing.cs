@@ -1,6 +1,5 @@
 using AgGrid.InfiniteRowModel.Sample.Database;
 using AgGrid.InfiniteRowModel.Sample.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,18 +8,9 @@ using Xunit;
 
 namespace AgGrid.InfiniteRowModel.Tests
 {
-    public class Parsing
+    public class Parsing : IDisposable
     {
-        private readonly AppDbContext _dbContext;
-
-        public Parsing()
-        {
-            var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _dbContext = new AppDbContext(dbContextOptions);
-        }
+        private readonly AppDbContext _dbContext = InMemory.GetDbContext();
 
         [Fact]
         public void ParseFromJson()
@@ -57,5 +47,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             Assert.Equal(1, result.RowsThisBlock.Single().Id);
         }
+
+        public void Dispose() => _dbContext.Dispose();
     }
 }

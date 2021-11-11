@@ -165,10 +165,4 @@ export interface AgBooleanColumnFilterModel {
 
 ## How to run sample app?
 
-- Apply database migrations from EF Core CLI tools:
-
-```cmd
-dotnet ef database update
-```
-
-- Created database will be seeded with sample data on app startup.
+- Just run it. Database will be created and seeded on app startup.

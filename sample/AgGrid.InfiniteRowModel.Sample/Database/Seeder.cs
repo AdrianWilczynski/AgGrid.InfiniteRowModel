@@ -1,6 +1,7 @@
 ﻿using AgGrid.InfiniteRowModel.Sample.Entities;
 using Bogus;
 using Bogus.Extensions;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace AgGrid.InfiniteRowModel.Sample.Database
@@ -16,6 +17,8 @@ namespace AgGrid.InfiniteRowModel.Sample.Database
 
         public void Seed()
         {
+            _dbContext.Database.Migrate();
+
             if (_dbContext.Users.Any())
             {
                 return;

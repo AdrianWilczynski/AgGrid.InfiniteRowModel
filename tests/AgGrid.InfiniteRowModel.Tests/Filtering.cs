@@ -8,17 +8,13 @@ using Xunit;
 
 namespace AgGrid.InfiniteRowModel.Tests
 {
-    public class Filtering
+    public abstract class Filtering : IDisposable
     {
-        private readonly AppDbContext _dbContext;
+        protected readonly AppDbContext _dbContext;
 
-        public Filtering()
+        protected Filtering(AppDbContext dbContext)
         {
-            var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _dbContext = new AppDbContext(dbContextOptions);
+            _dbContext = dbContext;
         }
 
         [Theory]
@@ -511,38 +507,6 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
-        [Theory]
-        [InlineData("Kowalska", FilterModelType.Contains, 1)]
-        [InlineData("Kowalska", FilterModelType.NotContains, 2)]
-        [InlineData("Ala", FilterModelType.StartsWith, 1)]
-        [InlineData("Kowalska", FilterModelType.EndsWith, 1)]
-        [InlineData("Ala Kowalska", FilterModelType.Equals, 1)]
-        [InlineData("Ala Kowalska", FilterModelType.NotEqual, 2)]
-        public void BeCaseSensitiveByDefault(string filter, string type, params int[] expectedIds)
-        {
-            var users = new[]
-            {
-                new User { Id = 1, FullName = "Ala Kowalska" },
-                new User { Id = 2, FullName = "ala kowalska" },
-            };
-
-            _dbContext.Users.AddRange(users);
-            _dbContext.SaveChanges();
-
-            var query = new GetRowsParams
-            {
-                StartRow = 0,
-                EndRow = 10,
-                FilterModel = new Dictionary<string, FilterModel>
-                {
-                    { "fullName", new FilterModel { Filter = filter, Type = type, FilterType = FilterModelFilterType.Text } }
-                }
-            };
-
-            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
-
-            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
-            Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
-        }
+        public virtual void Dispose() => _dbContext.Dispose();
     }
 }

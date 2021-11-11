@@ -137,8 +137,8 @@ namespace AgGrid.InfiniteRowModel
 
             return filterModel switch
             {
-                { Type: FilterModelType.Equals, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower().Equals(@{index}.ToLower())",
-                { Type: FilterModelType.NotEqual, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"!{propertyName}.ToLower().Equals(@{index}.ToLower())",
+                { Type: FilterModelType.Equals, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower() == @{index}.ToLower()",
+                { Type: FilterModelType.NotEqual, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower() != @{index}.ToLower()",
 
                 { Type: FilterModelType.Equals } => $"{propertyName} == @{index}",
                 { Type: FilterModelType.NotEqual } => $"{propertyName} != @{index}",

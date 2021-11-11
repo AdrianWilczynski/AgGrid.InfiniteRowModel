@@ -1,27 +1,15 @@
 ﻿using AgGrid.InfiniteRowModel.Sample.Database;
-using AgGrid.InfiniteRowModel.Sample.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace AgGrid.InfiniteRowModel.Tests
 {
-    public class Validation
+    public class Validation : IDisposable
     {
-        private readonly AppDbContext _dbContext;
-
-        public Validation()
-        {
-            var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _dbContext = new AppDbContext(dbContextOptions);
-        }
+        private readonly AppDbContext _dbContext = InMemory.GetDbContext();
 
         [Fact]
         public void ValidateColIds()
@@ -117,5 +105,7 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.Contains(nameof(FilterModel.Operator), exception.Message);
             Assert.Contains(query.FilterModel.First().Value.Operator, exception.Message);
         }
+
+        public void Dispose() => _dbContext.Dispose();
     }
 }
