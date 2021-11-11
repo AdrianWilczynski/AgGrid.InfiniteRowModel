@@ -103,7 +103,7 @@ namespace AgGrid.InfiniteRowModel
         {
             return filterModel switch
             {
-                { Type: FilterModelType.Null or FilterModelType.NotNull } => new object[0],
+                { Type: FilterModelType.Null or FilterModelType.NotNull } => Array.Empty<object>(),
 
                 { FilterType: FilterModelFilterType.Text } => new object[] { GetString(filterModel.Filter) },
 
