@@ -1,7 +1,7 @@
 import { AgFilterComponent } from 'ag-grid-angular';
 import { IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { Component } from '@angular/core';
-import { AgBooleanColumnFilterModel } from './ag-boolean-column-filter.model';
+import { BooleanFilterModel } from './boolean-filter.model';
 import { MAT_CHECKBOX_CLICK_ACTION } from '@angular/material';
 
 @Component({
@@ -40,7 +40,7 @@ export class AgBooleanColumnFilterComponent implements AgFilterComponent {
     throw new Error(`Not implemented. Seems to be unnecessary since we're doing all our filtering on the server side.`);
   }
 
-  getModel(): AgBooleanColumnFilterModel {
+  getModel(): BooleanFilterModel {
     if (!this.isFilterActive()) {
       return null;
     }
@@ -52,7 +52,7 @@ export class AgBooleanColumnFilterComponent implements AgFilterComponent {
     };
   }
 
-  setModel(model: AgBooleanColumnFilterModel) {
+  setModel(model: BooleanFilterModel) {
     if (!model) {
       this.value = null;
       return;

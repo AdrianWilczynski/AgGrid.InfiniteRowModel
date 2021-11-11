@@ -79,7 +79,7 @@ This package supports all three [built-in simple filters](https://www.ag-grid.co
 
 You can use [custom filter option](https://www.ag-grid.com/angular-data-grid/filter-provided-simple/#custom-filter-options) with simple filters to allow filtering by null.
 
-It also provides support for [custom boolean filter](https://www.ag-grid.com/angular-data-grid/component-filter/) implementation. You don't have to use the same filter but your filter model has to match `AgBooleanColumnFilterModel` interface (below).
+It also provides support for [custom boolean filter](https://www.ag-grid.com/angular-data-grid/component-filter/) implementation. You don't have to use the same filter but your filter model has to match `BooleanFilterModel` interface (below).
 
 ```ts
 @Component({
@@ -118,7 +118,7 @@ export class AgBooleanColumnFilterComponent implements AgFilterComponent {
     throw new Error(`Not implemented. Seems to be unnecessary since we're doing all our filtering on the server side.`);
   }
 
-  getModel(): AgBooleanColumnFilterModel {
+  getModel(): BooleanFilterModel {
     if (!this.isFilterActive()) {
       return null;
     }
@@ -130,7 +130,7 @@ export class AgBooleanColumnFilterComponent implements AgFilterComponent {
     };
   }
 
-  setModel(model: AgBooleanColumnFilterModel) {
+  setModel(model: BooleanFilterModel) {
     if (!model) {
       this.value = null;
       return;
@@ -156,7 +156,7 @@ export class AgBooleanColumnFilterComponent implements AgFilterComponent {
 ```
 
 ```ts
-export interface AgBooleanColumnFilterModel {
+export interface BooleanFilterModel {
   filter: boolean;
   filterType: 'boolean';
   type: 'equals' | 'notEqual';
