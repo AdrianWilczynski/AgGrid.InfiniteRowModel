@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AgGrid.InfiniteRowModel
+﻿namespace AgGrid.InfiniteRowModel
 {
     public class InfiniteRowModelOptions
     {
