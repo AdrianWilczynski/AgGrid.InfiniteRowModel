@@ -166,6 +166,8 @@ namespace AgGrid.InfiniteRowModel
                 { Type: FilterModelType.GreaterThan } => $"{propertyName} > @{index}",
                 { Type: FilterModelType.GreaterThanOrEqual } => $"{propertyName} >= @{index}",
 
+                { Type: FilterModelType.InRange } when options.InRangeExclusive => $"{propertyName} > @{index} AND {propertyName} < @{index + 1}",
+
                 { Type: FilterModelType.InRange } => $"{propertyName} >= @{index} AND {propertyName} <= @{index + 1}",
 
                 { Type: FilterModelType.Null } => $"{propertyName} == null",

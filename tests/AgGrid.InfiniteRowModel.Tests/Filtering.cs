@@ -507,6 +507,132 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
+        [Theory]
+        [InlineData(22, 34, 2)]
+        [InlineData(21, 33, 1)]
+        [InlineData(22, 55, 2, 3)]
+        public void HaveExclusiveInRangeNumberFilteringIfConfiguredToThisWay(int from, int to, params int[] expectedIds)
+        {
+            var users = new[]
+            {
+                new User { Id = 1, Age = 22 },
+                new User { Id = 2, Age = 33  },
+                new User { Id = 3, Age = 44 },
+                new User { Id = 4, Age = 55 },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "age", new FilterModel { Filter = from,  FilterTo = to, Type = FilterModelType.InRange, FilterType = FilterModelFilterType.Number } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query, new() { InRangeExclusive = true });
+
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
+            Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
+        }
+
+        [Fact]
+        public void HaveInclusiveInRangeNumberFilteringByDefault()
+        {
+            var users = new[]
+            {
+                new User { Id = 1, Age = 22 },
+                new User { Id = 2, Age = 33  },
+                new User { Id = 3, Age = 44 },
+                new User { Id = 4, Age = 55 },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "age", new FilterModel { Filter = 22,  FilterTo = 44, Type = FilterModelType.InRange, FilterType = FilterModelFilterType.Number } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
+
+            Assert.Equal(3, result.RowsThisBlock.Count());
+            Assert.Collection(result.RowsThisBlock, r => Assert.Equal(1, r.Id), r => Assert.Equal(2, r.Id), r => Assert.Equal(3, r.Id));
+        }
+
+        [Theory]
+        [InlineData("2019-10-10 00:00:00", "2020-01-01 00:00:00", 2)]
+        [InlineData("2018-01-01 00:00:00", "2021-11-15 00:00:00", 1, 2)]
+        [InlineData("2019-10-10 00:00:00", "2021-11-15 04:11:44", 2, 3)]
+        public void HaveExclusiveInRangeDateFilteringIfConfiguredToThisWay(string from, string to, params int[] expectedIds)
+        {
+            var users = new[]
+            {
+                new User { Id = 1, RegisteredOn = new DateTime(2019, 10, 10, 0, 0, 0) },
+                new User { Id = 2, RegisteredOn = new DateTime(2019, 10, 10, 9, 22, 33)  },
+                new User { Id = 3, RegisteredOn = new DateTime(2021, 11, 15, 0, 0, 0) },
+                new User { Id = 4, RegisteredOn = new DateTime(2021, 11, 15, 4, 11, 44) },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "registeredOn", new FilterModel { DateFrom = from, DateTo = to, Type = FilterModelType.InRange, FilterType = FilterModelFilterType.Date } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query, new() { InRangeExclusive = true });
+
+            Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
+            Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
+        }
+
+        [Fact]
+        public void HaveInclusiveInRangeDateFilteringByDefault()
+        {
+            var users = new[]
+            {
+                new User { Id = 1, RegisteredOn = new DateTime(2019, 10, 10, 0, 0, 0) },
+                new User { Id = 2, RegisteredOn = new DateTime(2019, 10, 10, 9, 22, 33)  },
+                new User { Id = 3, RegisteredOn = new DateTime(2021, 11, 15, 0, 0, 0) },
+                new User { Id = 4, RegisteredOn = new DateTime(2021, 11, 15, 4, 11, 44) },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "registeredOn", new FilterModel { DateFrom = "2018-01-01 00:00:00", DateTo = "2021-11-15 00:00:00", Type = FilterModelType.InRange, FilterType = FilterModelFilterType.Date } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query);
+
+            Assert.Equal(3, result.RowsThisBlock.Count());
+            Assert.Collection(result.RowsThisBlock, r => Assert.Equal(1, r.Id), r => Assert.Equal(2, r.Id), r => Assert.Equal(3, r.Id));
+        }
+
         public virtual void Dispose() => _dbContext.Dispose();
     }
 }
