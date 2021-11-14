@@ -1,15 +1,18 @@
 ﻿using AgGrid.InfiniteRowModel.Sample.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
+using Xunit.Abstractions;
 
 namespace AgGrid.InfiniteRowModel.Tests
 {
     public static class SqlServer
     {
-        public static AppDbContext GetDbContext()
+        public static AppDbContext GetDbContext(ITestOutputHelper output)
         {
             var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
                 .UseSqlServer(@$"Server=(localdb)\mssqllocaldb;Database={Guid.NewGuid()};Trusted_Connection=True;")
+                .LogTo(output.WriteLine, (eventId, _) => eventId == RelationalEventId.CommandExecuted)
                 .Options;
 
             var dbContext = new AppDbContext(dbContextOptions);
@@ -31,7 +34,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
     public class SqlServerFiltering : Filtering
     {
-        public SqlServerFiltering() : base(SqlServer.GetDbContext()) { }
+        public SqlServerFiltering(ITestOutputHelper output) : base(SqlServer.GetDbContext(output)) { }
 
         public override void Dispose()
         {
@@ -42,7 +45,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
     public class SqlServerOrdering : Ordering
     {
-        public SqlServerOrdering() : base(SqlServer.GetDbContext()) { }
+        public SqlServerOrdering(ITestOutputHelper output) : base(SqlServer.GetDbContext(output)) { }
 
         public override void Dispose()
         {
@@ -53,7 +56,7 @@ namespace AgGrid.InfiniteRowModel.Tests
 
     public class SqlServerPaging : Paging
     {
-        public SqlServerPaging() : base(SqlServer.GetDbContext()) { }
+        public SqlServerPaging(ITestOutputHelper output) : base(SqlServer.GetDbContext(output)) { }
 
         public override void Dispose()
         {
