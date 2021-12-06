@@ -1,5 +1,7 @@
 using AgGrid.InfiniteRowModel.Sample.Database;
 using AgGrid.InfiniteRowModel.Sample.Entities;
+using AgGrid.InfiniteRowModel.Tests.Models;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -631,6 +633,48 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             Assert.Equal(3, result.RowsThisBlock.Count());
             Assert.Collection(result.RowsThisBlock, r => Assert.Equal(1, r.Id), r => Assert.Equal(2, r.Id), r => Assert.Equal(3, r.Id));
+        }
+
+        [Fact]
+        public void FilterOverProjection()
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ala Kowalska", Age = 15 },
+                new User { Id = 2, FullName = "Jan Kowalski", Age = 20 },
+                new User { Id = 3, FullName = "Ala Nowak", Age = 30 }
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var mapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                const int currentYear = 2020;
+
+                cfg.CreateMap<User, UserDto>()
+                    .ForMember(d => d.Name, o => o.MapFrom(s => s.FullName))
+                    .ForMember(d => d.BirthYear, o => o.MapFrom(s => currentYear - s.Age));
+            });
+
+            var mapper = mapperConfiguration.CreateMapper();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "name", new FilterModel { Filter = "Ala", Type = FilterModelType.Contains, FilterType = FilterModelFilterType.Text } },
+                    { "birthYear", new FilterModel { Filter = 1990, Type = FilterModelType.Equals, FilterType = FilterModelFilterType.Number } }
+                }
+            };
+
+            var result = mapper.ProjectTo<UserDto>(_dbContext.Users)
+                .GetInfiniteRowModelBlock(query);
+
+            Assert.Single(result.RowsThisBlock);
+            Assert.Equal(3, result.RowsThisBlock.Single().Id);
         }
 
         public virtual void Dispose() => _dbContext.Dispose();
