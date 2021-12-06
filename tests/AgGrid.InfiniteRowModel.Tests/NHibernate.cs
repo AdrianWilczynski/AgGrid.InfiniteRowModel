@@ -16,105 +16,105 @@ namespace AgGrid.InfiniteRowModel.Tests
 {
     public class NHibernate
     {
-		private const string _dbFile = "nhibernate_test.db";
+        private const string _dbFile = "nhibernate_test.db";
 
-		private readonly ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
-		public NHibernate(ITestOutputHelper output)
-		{
-			_output = output;
-		}
-
-		private static ISessionFactory CreateSessionFactory(ITestOutputHelper output)
-			=> Fluently.Configure()
-				.Database(SQLiteConfiguration.Standard.UsingFile(_dbFile))
-				.Mappings(m => m.FluentMappings.Add<UserMap>())
-				.ExposeConfiguration(config =>
-                {
-					BuildSchema(config);
-					config.SetInterceptor(new NHibernateLoggerInterceptor(output));
-                })
-				.BuildSessionFactory();
-
-		private static void BuildSchema(Configuration config)
-		{
-			if (File.Exists(_dbFile))
-            {
-				File.Delete(_dbFile);
-			}
-
-			new SchemaExport(config)
-			  .Create(false, true);
-		}
-
-		[Fact]
-		public void BasicFilteringAndSorting()
+        public NHibernate(ITestOutputHelper output)
         {
-			var sessionFactory = CreateSessionFactory(_output);
-			using var session = sessionFactory.OpenSession();
+            _output = output;
+        }
 
-			using (var transaction = session.BeginTransaction())
+        private static ISessionFactory CreateSessionFactory(ITestOutputHelper output)
+            => Fluently.Configure()
+                .Database(SQLiteConfiguration.Standard.UsingFile(_dbFile))
+                .Mappings(m => m.FluentMappings.Add<UserMap>())
+                .ExposeConfiguration(config =>
+                {
+                    BuildSchema(config);
+                    config.SetInterceptor(new NHibernateLoggerInterceptor(output));
+                })
+                .BuildSessionFactory();
+
+        private static void BuildSchema(Configuration config)
+        {
+            if (File.Exists(_dbFile))
             {
-				session.Save(new User { Id = 1, FullName = "Jan Kowalski" });
-				session.Save(new User { Id = 2, FullName = "Ala Nowak" });
-				session.Save(new User { Id = 3, FullName = "Bartosz Kowalski" });
+                File.Delete(_dbFile);
+            }
 
-				transaction.Commit();
-			}
+            new SchemaExport(config)
+              .Create(false, true);
+        }
 
-			var query = new GetRowsParams
-			{
-				StartRow = 0,
-				EndRow = 10,
-				FilterModel = new Dictionary<string, FilterModel>
-				{
-					{ "fullName", new FilterModel { Filter = "Kowalski", Type = FilterModelType.Contains, FilterType = FilterModelFilterType.Text } }
-				},
-				SortModel = new[]
-				{
-					new SortModel
-					{
-						ColId = "fullName",
-						Sort = SortModelSortDirection.Ascending
-					}
-				}
-			};
+        [Fact]
+        public void BasicFilteringAndSorting()
+        {
+            var sessionFactory = CreateSessionFactory(_output);
+            using var session = sessionFactory.OpenSession();
 
-			var result = session.Query<User>()
-				.GetInfiniteRowModelBlock(query);
+            using (var transaction = session.BeginTransaction())
+            {
+                session.Save(new User { Id = 1, FullName = "Jan Kowalski" });
+                session.Save(new User { Id = 2, FullName = "Ala Nowak" });
+                session.Save(new User { Id = 3, FullName = "Bartosz Kowalski" });
 
-			Assert.Equal(2, result.RowsThisBlock.Count());
-			Assert.Equal(3, result.RowsThisBlock.ElementAt(0).Id);
-			Assert.Equal(1, result.RowsThisBlock.ElementAt(1).Id);
-		}
-	}
+                transaction.Commit();
+            }
 
-	public class UserMap : ClassMap<User>
-	{
-		public UserMap()
-		{
-			Id(u => u.Id);
-			Map(u => u.FullName);
-			Map(u => u.RegisteredOn);
-			Map(u => u.Age);
-			Map(u => u.IsVerified);
-		}
-	}
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "fullName", new FilterModel { Filter = "Kowalski", Type = FilterModelType.Contains, FilterType = FilterModelFilterType.Text } }
+                },
+                SortModel = new[]
+                {
+                    new SortModel
+                    {
+                        ColId = "fullName",
+                        Sort = SortModelSortDirection.Ascending
+                    }
+                }
+            };
 
-	public class NHibernateLoggerInterceptor : EmptyInterceptor
-	{
-		private readonly ITestOutputHelper _output;
+            var result = session.Query<User>()
+                .GetInfiniteRowModelBlock(query);
+
+            Assert.Equal(2, result.RowsThisBlock.Count());
+            Assert.Equal(3, result.RowsThisBlock.ElementAt(0).Id);
+            Assert.Equal(1, result.RowsThisBlock.ElementAt(1).Id);
+        }
+    }
+
+    public class UserMap : ClassMap<User>
+    {
+        public UserMap()
+        {
+            Id(u => u.Id);
+            Map(u => u.FullName);
+            Map(u => u.RegisteredOn);
+            Map(u => u.Age);
+            Map(u => u.IsVerified);
+        }
+    }
+
+    public class NHibernateLoggerInterceptor : EmptyInterceptor
+    {
+        private readonly ITestOutputHelper _output;
 
         public NHibernateLoggerInterceptor(ITestOutputHelper output)
         {
             _output = output;
         }
 
-		public override SqlString OnPrepareStatement(SqlString sql)
-		{
-			_output.WriteLine(sql.ToString());
+        public override SqlString OnPrepareStatement(SqlString sql)
+        {
+            _output.WriteLine(sql.ToString());
 
-			return base.OnPrepareStatement(sql);
-		}
-	}
+            return base.OnPrepareStatement(sql);
+        }
+    }
 }
