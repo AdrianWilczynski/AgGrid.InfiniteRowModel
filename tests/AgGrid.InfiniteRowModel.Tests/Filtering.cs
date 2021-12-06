@@ -657,6 +657,8 @@ namespace AgGrid.InfiniteRowModel.Tests
                     .ForMember(d => d.BirthYear, o => o.MapFrom(s => currentYear - s.Age));
             });
 
+            mapperConfiguration.AssertConfigurationIsValid();
+
             var mapper = mapperConfiguration.CreateMapper();
 
             var query = new GetRowsParams
