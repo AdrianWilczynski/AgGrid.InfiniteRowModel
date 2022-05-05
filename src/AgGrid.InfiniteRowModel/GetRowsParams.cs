@@ -43,7 +43,7 @@ namespace AgGrid.InfiniteRowModel
 
     public static class FilterModelFilterType
     {
-        public static HashSet<string> All { get; } = new() { Text, Number, Date, Boolean };
+        public static HashSet<string> All { get; } = new() { Text, Number, Date, Boolean, Set };
 
         public const string Text = "text";
         public const string Number = "number";
