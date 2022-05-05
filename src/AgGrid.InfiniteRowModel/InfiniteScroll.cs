@@ -122,7 +122,7 @@ namespace AgGrid.InfiniteRowModel
                 { FilterType: FilterModelFilterType.Set } when options.CaseInsensitive => new object[] { filterModel.Values.Select(v => v?.ToLower()).ToList() },
                 { FilterType: FilterModelFilterType.Set } => new object[] { filterModel.Values },
 
-                _ => throw new ArgumentException($"Unable to determine arguments for {colId}. Most likely {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}) is unsupported. Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
+                _ => throw new ArgumentException($"Unable to determine predicate arguments for {colId}. Most likely {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}) is unsupported. Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
             };
         }
 
