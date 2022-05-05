@@ -58,6 +58,7 @@ namespace AgGrid.InfiniteRowModel.Tests
                 session.Save(new User { Id = 1, FullName = "Jan Kowalski" });
                 session.Save(new User { Id = 2, FullName = "Ala Nowak" });
                 session.Save(new User { Id = 3, FullName = "Bartosz Kowalski" });
+                session.Save(new User { Id = 4, FullName = null });
 
                 transaction.Commit();
             }
@@ -68,7 +69,7 @@ namespace AgGrid.InfiniteRowModel.Tests
                 EndRow = 10,
                 FilterModel = new Dictionary<string, FilterModel>
                 {
-                    { "fullName", new FilterModel { Filter = "Kowalski", Type = FilterModelType.Contains, FilterType = FilterModelFilterType.Text } }
+                    { "fullName", new FilterModel { Filter = "Kowalski", Type = FilterModelType.EndsWith, FilterType = FilterModelFilterType.Text } }
                 },
                 SortModel = new[]
                 {

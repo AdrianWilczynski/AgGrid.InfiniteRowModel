@@ -30,13 +30,14 @@ namespace AgGrid.InfiniteRowModel.Tests
         [InlineData("Ala", FilterModelType.StartsWith, 1)]
         [InlineData("Kowalska", FilterModelType.EndsWith, 1)]
         [InlineData("Ala Kowalska", FilterModelType.Equals, 1)]
-        [InlineData("Ala Kowalska", FilterModelType.NotEqual, 2)]
+        [InlineData("Ala Kowalska", FilterModelType.NotEqual, 2, 3)]
         public void BeCaseSensitiveByDefaultButThisDependsOnDatabaseBehavior(string filter, string type, params int[] expectedIds)
         {
             var users = new[]
             {
                 new User { Id = 1, FullName = "Ala Kowalska" },
                 new User { Id = 2, FullName = "ala kowalska" },
+                new User { Id = 3, FullName = null },
             };
 
             _dbContext.Users.AddRange(users);

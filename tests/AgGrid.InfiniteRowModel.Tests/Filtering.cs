@@ -23,7 +23,7 @@ namespace AgGrid.InfiniteRowModel.Tests
         [InlineData("Kowal", FilterModelType.Contains, 1, 2)]
         [InlineData("Kowal", FilterModelType.NotContains, 3)]
         [InlineData("Ala Kowalska", FilterModelType.Equals, 1)]
-        [InlineData("Ala Kowalska", FilterModelType.NotEqual, 2, 3)]
+        [InlineData("Ala Kowalska", FilterModelType.NotEqual, 2, 3, 4)]
         [InlineData("Ala", FilterModelType.StartsWith, 1, 3)]
         [InlineData("ska", FilterModelType.EndsWith, 1)]
         public void FilterByText(string filter, string type, params int[] expectedIds)
@@ -32,7 +32,8 @@ namespace AgGrid.InfiniteRowModel.Tests
             {
                 new User { Id = 1, FullName = "Ala Kowalska" },
                 new User { Id = 2, FullName = "Jan Kowalski" },
-                new User { Id = 3, FullName = "Ala Nowak" }
+                new User { Id = 3, FullName = "Ala Nowak" },
+                new User { Id = 4, FullName = null }
             };
 
             _dbContext.Users.AddRange(users);
