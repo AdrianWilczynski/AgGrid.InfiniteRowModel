@@ -2,6 +2,10 @@
 
   <PropertyGroup>
 	  <TargetFramework>netstandard2.1</TargetFramework>
+	  <Authors>Adrian Wilczyński</Authors>
+	  <Description>Async support for AgGrid.InfiniteRowModel.</Description>
+	  <RepositoryUrl>https://github.com/AdrianWilczynski/AgGrid.InfiniteRowModel</RepositoryUrl>
+	  <Version>1.5.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
