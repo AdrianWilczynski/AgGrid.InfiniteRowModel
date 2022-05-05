@@ -56,6 +56,42 @@ namespace AgGrid.InfiniteRowModel.Tests
         }
 
         [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void FilterBySet(bool caseInsensitive)
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ala Kowalska" },
+                new User { Id = 2, FullName = "Jan Kowalski" },
+                new User { Id = 3, FullName = "Ala Nowak" },
+                new User { Id = 4, FullName = null },
+                new User { Id = 5, FullName = "Ala Nowak" },
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "fullName", new FilterModel { Values = new[] { "Jan Kowalski", "Ala Nowak", null }, FilterType = FilterModelFilterType.Set } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query, new() { CaseInsensitive = caseInsensitive });
+
+            Assert.Equal(4, result.RowsThisBlock.Count());
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 2);
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 3);
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 4);
+            Assert.Contains(result.RowsThisBlock, r => r.Id == 5);
+        }
+
+        [Theory]
         [InlineData(18, FilterModelType.Equals, 3)]
         [InlineData(18, FilterModelType.NotEqual, 1, 2)]
         [InlineData(22, FilterModelType.LessThan, 3)]
@@ -482,7 +518,7 @@ namespace AgGrid.InfiniteRowModel.Tests
         [InlineData("owaLSKA", FilterModelType.EndsWith, 1)]
         [InlineData("ala KOWALSKA", FilterModelType.Equals, 1)]
         [InlineData("ala KOWALSKA", FilterModelType.NotEqual, 2, 3)]
-        public void BeCaseInsensitiveIfConfiguredToBe(string filter, string type, params int[] expectedIds)
+        public void BeCaseInsensitiveWhenFilteringByTextIfConfiguredToBe(string filter, string type, params int[] expectedIds)
         {
             var users = new[]
             {
@@ -508,6 +544,34 @@ namespace AgGrid.InfiniteRowModel.Tests
 
             Assert.Equal(expectedIds.Length, result.RowsThisBlock.Count());
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
+        }
+
+        [Fact]
+        public void BeCaseInsensitiveWhenFilteringBySetIfConfiguredToBe()
+        {
+            var users = new[]
+            {
+                new User { Id = 1, FullName = "Ala Kowalska" },
+                new User { Id = 2, FullName = "Jan Kowalski" },
+                new User { Id = 3, FullName = "Ala Nowak" }
+            };
+
+            _dbContext.Users.AddRange(users);
+            _dbContext.SaveChanges();
+
+            var query = new GetRowsParams
+            {
+                StartRow = 0,
+                EndRow = 10,
+                FilterModel = new Dictionary<string, FilterModel>
+                {
+                    { "fullName", new FilterModel { Values = new[] { "jan KOWALSki" }, FilterType = FilterModelFilterType.Set } }
+                }
+            };
+
+            var result = _dbContext.Users.GetInfiniteRowModelBlock(query, new() { CaseInsensitive = true });
+
+            Assert.Equal(2, result.RowsThisBlock.Single().Id);
         }
 
         [Theory]

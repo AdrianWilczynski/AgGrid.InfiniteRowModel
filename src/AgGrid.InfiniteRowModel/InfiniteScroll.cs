@@ -68,7 +68,7 @@ namespace AgGrid.InfiniteRowModel
                 if (string.IsNullOrEmpty(filterModel.Operator))
                 {
                     var predicate = GetPredicate(colId, filterModel, 0, options);
-                    var args = GetWhereArgs(filterModel);
+                    var args = GetWhereArgs(colId, filterModel, options);
 
                     queryable = queryable.Where(predicate, args);
                 }
@@ -77,12 +77,12 @@ namespace AgGrid.InfiniteRowModel
                     ValidateOperator(filterModel);
 
                     var predicateLeftSide = GetPredicate(colId, filterModel.Condition1, 0, options);
-                    var argsLeftSide = GetWhereArgs(filterModel.Condition1);
+                    var argsLeftSide = GetWhereArgs(colId, filterModel.Condition1, options);
 
                     var rightSideArgsIndex = argsLeftSide.Length;
 
                     var predicateRightSide = GetPredicate(colId, filterModel.Condition2, rightSideArgsIndex, options);
-                    var argsRightSide = GetWhereArgs(filterModel.Condition2);
+                    var argsRightSide = GetWhereArgs(colId, filterModel.Condition2, options);
 
                     var predicate = $"({predicateLeftSide}) {filterModel.Operator} ({predicateRightSide})";
                     var args = argsLeftSide.Concat(argsRightSide).ToArray();
@@ -102,12 +102,13 @@ namespace AgGrid.InfiniteRowModel
             }
         }
 
-        private static object[] GetWhereArgs(FilterModel filterModel)
+        private static object[] GetWhereArgs(string colId, FilterModel filterModel, InfiniteRowModelOptions options)
         {
             return filterModel switch
             {
                 { Type: FilterModelType.Null or FilterModelType.NotNull } => Array.Empty<object>(),
 
+                { FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => new object[] { GetString(filterModel.Filter).ToLower() },
                 { FilterType: FilterModelFilterType.Text } => new object[] { GetString(filterModel.Filter) },
 
                 { FilterType: FilterModelFilterType.Number, Type: FilterModelType.InRange } => new object[] { GetNumber(filterModel.Filter), filterModel.FilterTo },
@@ -118,7 +119,10 @@ namespace AgGrid.InfiniteRowModel
 
                 { FilterType: FilterModelFilterType.Boolean } => new object[] { GetBoolean(filterModel.Filter) },
 
-                _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}). Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
+                { FilterType: FilterModelFilterType.Set } when options.CaseInsensitive => new object[] { filterModel.Values.Select(v => v?.ToLower()).ToList() },
+                { FilterType: FilterModelFilterType.Set } => new object[] { filterModel.Values },
+
+                _ => throw new ArgumentException($"Unable to determine arguments for {colId}. Most likely {nameof(FilterModel.FilterType)} value ({filterModel.FilterType}) is unsupported. Supported values: {string.Join(", ", FilterModelFilterType.All)}.")
             };
         }
 
@@ -140,22 +144,22 @@ namespace AgGrid.InfiniteRowModel
 
             return filterModel switch
             {
-                { Type: FilterModelType.Equals, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower() == @{index}.ToLower()",
-                { Type: FilterModelType.NotEqual, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower() != @{index}.ToLower()",
-
+                { Type: FilterModelType.Equals, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower() == @{index}",
                 { Type: FilterModelType.Equals } => $"{propertyName} == @{index}",
+
+                { Type: FilterModelType.NotEqual, FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => $"{propertyName}.ToLower() != @{index}",
                 { Type: FilterModelType.NotEqual } => $"{propertyName} != @{index}",
 
-                { Type: FilterModelType.Contains } when options.CaseInsensitive => $"{propertyName}.ToLower().Contains(@{index}.ToLower())",
-                { Type: FilterModelType.NotContains } when options.CaseInsensitive => $"!{propertyName}.ToLower().Contains(@{index}.ToLower())",
-
+                { Type: FilterModelType.Contains } when options.CaseInsensitive => $"{propertyName}.ToLower().Contains(@{index})",
                 { Type: FilterModelType.Contains } => $"{propertyName}.Contains(@{index})",
+
+                { Type: FilterModelType.NotContains } when options.CaseInsensitive => $"!{propertyName}.ToLower().Contains(@{index})",
                 { Type: FilterModelType.NotContains } => $"!{propertyName}.Contains(@{index})",
 
-                { Type: FilterModelType.StartsWith } when options.CaseInsensitive => $"{propertyName}.ToLower().StartsWith(@{index}.ToLower())",
-                { Type: FilterModelType.EndsWith } when options.CaseInsensitive => $"{propertyName}.ToLower().EndsWith(@{index}.ToLower())",
-
+                { Type: FilterModelType.StartsWith } when options.CaseInsensitive => $"{propertyName}.ToLower().StartsWith(@{index})",
                 { Type: FilterModelType.StartsWith } => $"{propertyName}.StartsWith(@{index})",
+
+                { Type: FilterModelType.EndsWith } when options.CaseInsensitive => $"{propertyName}.ToLower().EndsWith(@{index})",
                 { Type: FilterModelType.EndsWith } => $"{propertyName}.EndsWith(@{index})",
 
                 { Type: FilterModelType.LessThan } => $"{propertyName} < @{index}",
@@ -171,7 +175,10 @@ namespace AgGrid.InfiniteRowModel
                 { Type: FilterModelType.Null } => $"{propertyName} == null",
                 { Type: FilterModelType.NotNull } => $"{propertyName} != null",
 
-                _ => throw new ArgumentException($"Unsupported {nameof(FilterModel.Type)} value ({filterModel.Type}). Supported values: {string.Join(", ", FilterModelType.All)}.")
+                { FilterType: FilterModelFilterType.Set } when options.CaseInsensitive => $"@{index}.Contains({propertyName}.ToLower())",
+                { FilterType: FilterModelFilterType.Set } => $"@{index}.Contains({propertyName})",
+
+                _ => throw new ArgumentException($"Unable to determine predicate for {colId}. Most likely {nameof(FilterModel.Type)} value ({filterModel.Type}) is unsupported. Supported values: {string.Join(", ", FilterModelType.All)}.")
             };
         }
 

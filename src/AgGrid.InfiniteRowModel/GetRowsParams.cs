@@ -29,10 +29,12 @@ namespace AgGrid.InfiniteRowModel
     {
         public string FilterType { get; set; }
         public string Type { get; set; }
+
         public object Filter { get; set; }
         public double FilterTo { get; set; }
         public string DateFrom { get; set; }
         public string DateTo { get; set; }
+        public IEnumerable<string> Values { get; set; }
 
         public string Operator { get; set; }
         public FilterModel Condition1 { get; set; }
@@ -47,6 +49,7 @@ namespace AgGrid.InfiniteRowModel
         public const string Number = "number";
         public const string Date = "date";
         public const string Boolean = "boolean";
+        public const string Set = "set";
     }
 
     public static class FilterModelType

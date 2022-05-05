@@ -24,7 +24,7 @@ nullFilterOption: IFilterOptionDef = {
   displayKey: 'null',
   displayName: 'Null',
   test: (filterValue, cellValue) => cellValue === null,
-  hideFilterInput: true
+  numberOfInputs: 0
 };
 
 gridOptions: GridOptions = {
