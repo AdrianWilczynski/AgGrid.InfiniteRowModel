@@ -44,7 +44,7 @@ export class AppComponent {
           ]
         }
       },
-      { headerName: 'Registered on', field: 'registeredOn', filter: 'agDateColumnFilter' },
+      { headerName: 'Registered on', field: 'registeredOn', filter: 'agDateColumnFilter', sort: 'desc' },
       { headerName: 'Age', field: 'age', filter: 'agNumberColumnFilter' },
       { headerName: 'Is verified', field: 'isVerified', filter: 'agBooleanColumnFilter' }
     ],

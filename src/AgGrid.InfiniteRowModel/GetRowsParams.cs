@@ -19,7 +19,7 @@ namespace AgGrid.InfiniteRowModel
 
     public static class SortModelSortDirection
     {
-        public static HashSet<string> All { get; } = new HashSet<string> { Ascending, Descending };
+        public static HashSet<string> All { get; } = new() { Ascending, Descending };
 
         public const string Ascending = "asc";
         public const string Descending = "desc";
@@ -41,7 +41,7 @@ namespace AgGrid.InfiniteRowModel
 
     public static class FilterModelFilterType
     {
-        public static IEnumerable<string> All { get; } = new[] { Text, Number, Date, Boolean };
+        public static HashSet<string> All { get; } = new() { Text, Number, Date, Boolean };
 
         public const string Text = "text";
         public const string Number = "number";
@@ -51,7 +51,7 @@ namespace AgGrid.InfiniteRowModel
 
     public static class FilterModelType
     {
-        public static IEnumerable<string> All { get; } = new[]
+        public static HashSet<string> All { get; } = new()
         {
             Equals, NotEqual, Contains, NotContains,
             StartsWith, EndsWith, LessThan, LessThanOrEqual,
@@ -82,7 +82,7 @@ namespace AgGrid.InfiniteRowModel
 
     public static class FilterModelOperator
     {
-        public static HashSet<string> All { get; } = new HashSet<string> { And, Or };
+        public static HashSet<string> All { get; } = new() { And, Or };
 
         public const string And = "AND";
         public const string Or = "OR";

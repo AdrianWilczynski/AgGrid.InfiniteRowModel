@@ -30,6 +30,8 @@ namespace AgGrid.InfiniteRowModel.Sample
                     .LogTo(Console.WriteLine));
 
             services.AddTransient<Seeder>();
+
+            services.AddSwaggerDocument();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -46,10 +48,14 @@ namespace AgGrid.InfiniteRowModel.Sample
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
             }
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseRouting();
 
