@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleToAttribute("AgGrid.InfiniteRowModel.EntityFrameworkCore")]
 namespace AgGrid.InfiniteRowModel
 {
     public static class QueryableExtensions

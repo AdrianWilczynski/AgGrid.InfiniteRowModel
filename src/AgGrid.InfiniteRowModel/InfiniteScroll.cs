@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
+[assembly: InternalsVisibleToAttribute("AgGrid.InfiniteRowModel.EntityFrameworkCore")]
 namespace AgGrid.InfiniteRowModel
 {
     internal static class InfiniteScroll
