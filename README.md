@@ -23,7 +23,7 @@ public InfiniteRowModelResult<User> Get(string query)
 nullFilterOption: IFilterOptionDef = {
   displayKey: 'null',
   displayName: 'Null',
-  test: (filterValue, cellValue) => cellValue === null,
+  test: (filterValues, cellValue) => cellValue === null,
   numberOfInputs: 0
 };
 
