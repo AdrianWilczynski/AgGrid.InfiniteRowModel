@@ -106,7 +106,7 @@ namespace AgGrid.InfiniteRowModel
         {
             return filterModel switch
             {
-                { Type: FilterModelType.Null or FilterModelType.NotNull } => Array.Empty<object>(),
+                { Type: FilterModelType.Null or FilterModelType.NotNull or FilterModelType.Blank or FilterModelType.NotBlank } => Array.Empty<object>(),
 
                 { FilterType: FilterModelFilterType.Text } when options.CaseInsensitive => new object[] { GetString(filterModel.Filter).ToLower() },
                 { FilterType: FilterModelFilterType.Text } => new object[] { GetString(filterModel.Filter) },
@@ -172,8 +172,8 @@ namespace AgGrid.InfiniteRowModel
 
                 { Type: FilterModelType.InRange } => $"{propertyName} >= @{index} AND {propertyName} <= @{index + 1}",
 
-                { Type: FilterModelType.Null } => $"{propertyName} == null",
-                { Type: FilterModelType.NotNull } => $"{propertyName} != null",
+                { Type: FilterModelType.Null or FilterModelType.Blank } => $"{propertyName} == null",
+                { Type: FilterModelType.NotNull or FilterModelType.NotBlank } => $"{propertyName} != null",
 
                 { FilterType: FilterModelFilterType.Set } when options.CaseInsensitive => $"@{index}.Contains({propertyName}.ToLower())",
                 { FilterType: FilterModelFilterType.Set } => $"@{index}.Contains({propertyName})",

@@ -347,8 +347,10 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
-        [Fact]
-        public void FilterByNull()
+        [Theory]
+        [InlineData(FilterModelType.Null)]
+        [InlineData(FilterModelType.Blank)]
+        public void FilterByNull(string filterModelType)
         {
             var users = new[]
             {
@@ -367,7 +369,7 @@ namespace AgGrid.InfiniteRowModel.Tests
                 EndRow = 10,
                 FilterModel = new Dictionary<string, FilterModel>
                 {
-                    { "fullName", new FilterModel { Type = FilterModelType.Null, FilterType = FilterModelFilterType.Text } }
+                    { "fullName", new FilterModel { Type = filterModelType, FilterType = FilterModelFilterType.Text } }
                 }
             };
 
@@ -480,8 +482,10 @@ namespace AgGrid.InfiniteRowModel.Tests
             Assert.True(result.RowsThisBlock.All(r => expectedIds.Contains(r.Id)));
         }
 
-        [Fact]
-        public void FilterByNotNull()
+        [Theory]
+        [InlineData(FilterModelType.NotNull)]
+        [InlineData(FilterModelType.NotBlank)]
+        public void FilterByNotNull(string filterModelType)
         {
             var users = new[]
             {
@@ -500,7 +504,7 @@ namespace AgGrid.InfiniteRowModel.Tests
                 EndRow = 10,
                 FilterModel = new Dictionary<string, FilterModel>
                 {
-                    { "fullName", new FilterModel { Type = FilterModelType.NotNull, FilterType = FilterModelFilterType.Text } }
+                    { "fullName", new FilterModel { Type = filterModelType, FilterType = FilterModelFilterType.Text } }
                 }
             };
 
